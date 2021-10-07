@@ -43,37 +43,40 @@ function nodes_incidencies_column($column, $post_id) {
     if ('estat' === $column) {
         $url_base = 'edit.php?post_type=nodes_incidencies';
         $estats = get_the_terms($post_id, 'nodes_estat_inc');
-        $estats_list = '';
 
-        foreach ($estats as $estat) {
-            $estats_list .= " <a href='" . $url_base . "&nodes_estat_inc=" . $estat->slug . "'>" . $estat->name . "</a>,";
+        if (is_array($estats)) {
+            $estats_list = '';
+            foreach ($estats as $estat) {
+                $estats_list .= " <a href='" . $url_base . "&nodes_estat_inc=" . $estat->slug . "'>" . $estat->name . "</a>,";
+            }
+            echo rtrim($estats_list, ','); // remove last comma
         }
-
-        echo rtrim($estats_list, ','); // remove last comma
     }
 
     if ('ambit' === $column) {
         $url_base = 'edit.php?post_type=nodes_incidencies';
         $ambits = get_the_terms($post_id, 'nodes_ambit_inc');
-        $ambits_list = '';
 
-        foreach ($ambits as $ambit) {
-            $ambits_list .= " <a href='" . $url_base . "&nodes_ambit_inc=" . $ambit->slug . "'>" . $ambit->name . "</a>,";
+        if (is_array($ambits)) {
+            $ambits_list = '';
+            foreach ($ambits as $ambit) {
+                $ambits_list .= " <a href='" . $url_base . "&nodes_ambit_inc=" . $ambit->slug . "'>" . $ambit->name . "</a>,";
+            }
+            echo rtrim($ambits_list, ','); // remove last comma
         }
-
-        echo rtrim($ambits_list, ','); // remove last comma
     }
 
     if ('ubicacio' === $column) {
         $url_base = 'edit.php?post_type=nodes_incidencies';
         $ubicacions = get_the_terms($post_id, 'nodes_ubicacio_inc');
-        $ubicacio_list = '';
 
-        foreach ($ubicacions as $ubi) {
-            $ubicacio_list .= " <a href='" . $url_base . "&nodes_ubicacio_inc=" . $ubi->slug . "'>" . $ubi->name . "</a>,";
+        if (is_array($ubicacions)) {
+            $ubicacio_list = '';
+            foreach ($ubicacions as $ubi) {
+                $ubicacio_list .= " <a href='" . $url_base . "&nodes_ubicacio_inc=" . $ubi->slug . "'>" . $ubi->name . "</a>,";
+            }
+            echo rtrim($ubicacio_list, ','); // remove last comma
         }
-
-        echo rtrim($ubicacio_list, ','); // remove last comma
     }
 
 }
