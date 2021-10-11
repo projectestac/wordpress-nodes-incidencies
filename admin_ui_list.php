@@ -101,12 +101,14 @@ add_filter('wp_terms_checklist_args', function ($args, $post_id) {
         return $args;
     }
 
-    $estat = get_term_by('name', 'Oberta', 'nodes_estat_inc');
-    $args['selected_cats'][] = $estat->term_id;
+    if (term_exists('Oberta', 'nodes_estat_inc')) {
+        $estat = term_exists('Oberta', 'nodes_estat_inc');
+        $args['selected_cats'][] = $estat['term_id'];
+    }
 
     return $args;
 
-    }, 10, 2);
+}, 10, 2);
 
 add_filter('posts_join', 'nodes_incidencies_search_join');
 
@@ -115,7 +117,7 @@ function nodes_incidencies_search_join($join) {
     global $pagenow, $wpdb;
 
     // I want the filter only when performing a search on edit page of Custom Post Type named "nodes_incidencies".
-    if (is_admin() && 'edit.php' === $pagenow && 'nodes_incidencies' === $_GET['post_type'] && !empty($_GET['s'])) {
+    if (isset($_GET['post_type']) && is_admin() && 'edit.php' === $pagenow && 'nodes_incidencies' === $_GET['post_type'] && !empty($_GET['s'])) {
         $join .= 'LEFT JOIN ' . $wpdb->postmeta . ' ON ' . $wpdb->posts . '.ID = ' . $wpdb->postmeta . '.post_id ';
     }
 
@@ -130,7 +132,7 @@ function nodes_incidencies_search_where($where) {
     global $pagenow, $wpdb;
 
     // I want the filter only when performing a search on edit page of Custom Post Type named "nodes_incidencies".
-    if (is_admin() && 'edit.php' === $pagenow && 'nodes_incidencies' === $_GET['post_type'] && !empty($_GET['s'])) {
+    if (isset($_GET['post_type']) && is_admin() && 'edit.php' === $pagenow && 'nodes_incidencies' === $_GET['post_type'] && !empty($_GET['s'])) {
         $where = preg_replace(
             "/\(\s*" . $wpdb->posts . ".post_title\s+LIKE\s*(\'[^\']+\')\s*\)/",
             "(" . $wpdb->posts . ".post_title LIKE $1) OR (" . $wpdb->postmeta . ".meta_value LIKE $1)", $where);
@@ -287,7 +289,14 @@ add_filter('views_edit-nodes_incidencies', 'nodes_incidencies_quick_links_labels
 
 // TODO: internacionalització
 function nodes_incidencies_quick_links_labels($views) {
-    $views['trash'] = str_replace('Paperera', 'Arxivades', $views['trash']);
-    $views['mine'] = str_replace('Els meus', 'Les meves', $views['mine']);
+
+    if (isset($views['trash'])) {
+        $views['trash'] = str_replace('Paperera', 'Arxivades', $views['trash']);
+    }
+
+    if (isset($views['mine'])) {
+        $views['mine'] = str_replace('Els meus', 'Les meves', $views['mine']);
+    }
     return $views;
+
 }

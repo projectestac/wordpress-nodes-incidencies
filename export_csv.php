@@ -8,7 +8,7 @@ function admin_incidencies_list_add_export_button($which) {
 
     if ('nodes_incidencies' === $typenow && 'top' === $which) {
         ?>
-        <input type="submit" name="export_all_incidencies" class="button button-primary export"
+        <input type="submit" name="export_all_incidencies" class="button export"
                value="<?php _e('Exporta'); ?>"/>
         <?php
     }
@@ -20,11 +20,11 @@ add_action('manage_posts_extra_tablenav', 'admin_incidencies_list_add_export_but
 function func_export_all_incidencies() {
 
     if (isset($_GET['export_all_incidencies'])) {
-        $arg = array(
+        $arg = [
             'post_type' => 'nodes_incidencies',
             'post_status' => 'publish',
             'posts_per_page' => -1,
-        );
+        ];
 
         global $post;
         $arr_post = get_posts($arg);

@@ -1,6 +1,8 @@
 <?php
 
-function nodes_incidencies_informatiques_register_post_type() {
+// Create CPT nodes_incidencies, taxonomies and predefined terms
+
+function nodes_incidencies_register_post_type() {
 
     // CPT: nodes_incidencies_informatiques
     // TODO: Internacionalització
@@ -23,6 +25,10 @@ function nodes_incidencies_informatiques_register_post_type() {
         'labels' => $labels,
         'public' => true,
         'show_in_rest' => false,
+        'has_archive' => false,
+        'publicly_queryable' => true,
+        'exclude_from_search' => true,
+        'query_var' => false,
         'hierarchical' => false,
         'menu_icon' => 'dashicons-laptop',
         'supports' => [
@@ -31,17 +37,15 @@ function nodes_incidencies_informatiques_register_post_type() {
             'thumbnail'
         ],
         'rewrite' => ['slug' => 'incidencies-informatiques'],
-        'has_archive' => true,
         'register_meta_box_cb' => 'add_incidencies_informatiques_metaboxes'
     ];
 
     register_post_type('nodes_incidencies', $args);
+
 }
 
-add_action('init', 'nodes_incidencies_informatiques_register_post_type');
-add_action('pre_get_posts', 'add_my_post_types_to_query');
-
-function add_my_post_types_to_query($query) {
+// Add nodes_incidencies CPT to query
+function add_nodes_incidencies_to_query($query) {
     if (is_home() && $query->is_main_query())
         $query->set('post_type', ['post', 'nodes_incidencies']);
     return $query;
@@ -70,7 +74,13 @@ function nodes_incidencies_register_taxonomy() {
         'args' => ['orderby' => 'term_order'],
         'rewrite' => ['slug' => 'estats_incidencia'],
         'show_admin_column' => true,
-        'show_in_rest' => true
+        'show_in_rest' => true,
+        'capabilities' => [
+            'manage_terms' => 'manage_options', //by default only admin
+            'edit_terms' => 'manage_options',
+            'delete_terms' => 'manage_options',
+            'assign_terms' => 'edit_others_posts'  // means administrator', 'editor'
+        ]
     ];
 
     register_taxonomy('nodes_estat_inc', ['nodes_incidencies'], $args);
@@ -98,7 +108,7 @@ function nodes_incidencies_register_taxonomy() {
         'show_in_rest' => true
     ];
 
-    register_taxonomy('nodes_ambit_inc', array('nodes_incidencies'), $args);
+    register_taxonomy('nodes_ambit_inc', ['nodes_incidencies'], $args);
 
     // TAXONOMY Ubicació
     $labels = [
@@ -123,9 +133,270 @@ function nodes_incidencies_register_taxonomy() {
         'show_in_rest' => true
     ];
 
-    register_taxonomy('nodes_ubicacio_inc', array('nodes_incidencies'), $args);
+    register_taxonomy('nodes_ubicacio_inc', ['nodes_incidencies'], $args);
 
 }
 
-// Register all taxonomies
-add_action('init', 'nodes_incidencies_register_taxonomy');
+// Set of predefined TERMS
+function nodes_incidencies_set_terms() {
+
+    if (get_option('Activated_incidencies') != 'nodes_incidencies') {
+        return;
+    }
+
+    // Estats
+    if (!term_exists('Oberta', 'nodes_estat_inc')) {
+        wp_insert_term(
+            'Oberta',
+            'nodes_estat_inc',
+            [
+                'description' => 'Incidència pendent de revisar per la coordinació digital',
+                'slug' => 'oberta'
+            ]
+        );
+    }
+
+    if (!term_exists('Més dades', 'nodes_estat_inc')) {
+        wp_insert_term(
+            'Més dades',
+            'nodes_estat_inc',
+            [
+                'description' => 'Es necessiten més dades',
+                'slug' => 'mes-dades'
+            ]
+        );
+    }
+
+    if (!term_exists('En procés', 'nodes_estat_inc')) {
+        wp_insert_term(
+            'En procés',
+            'nodes_estat_inc',
+            [
+                'description' => 'S\'esta revisant/tramitant la incidència per part de la coordinació digital o suport',
+                'slug' => 'en-proces'
+            ]
+        );
+    }
+
+    if (!term_exists('Notificat a Remedy', 'nodes_estat_inc')) {
+        wp_insert_term(
+            'Notificat a Remedy',
+            'nodes_estat_inc',
+            [
+                'description' => 'Notificat a Remedy i esperant resposta',
+                'slug' => 'notificat-remedy'
+            ]
+        );
+    }
+
+    if (!term_exists('Cal reobrir', 'nodes_estat_inc')) {
+        wp_insert_term(
+            'Cal reobrir',
+            'nodes_estat_inc',
+            [
+                'description' => 'Incidència no solucionada que cal reobrir (notificar de nou a Remedy)',
+                'slug' => 'cal-reobrir'
+            ]
+        );
+    }
+
+    if (!term_exists('Solucionada', 'nodes_estat_inc')) {
+        wp_insert_term(
+            'Solucionada',
+            'nodes_estat_inc',
+            [
+                'description' => 'Incidència solucionada correctament',
+                'slug' => 'solucionada'
+            ]
+        );
+    }
+
+    // Tipus
+    if (!term_exists('Maquinari', 'nodes_ambit_inc')) {
+        wp_insert_term(
+            'Maquinari',
+            'nodes_ambit_inc',
+            [
+                'description' => 'Incidència relacionada amb el maquinari',
+                'slug' => 'maquinari'
+            ]
+        );
+    }
+
+    $maquinari_id = term_exists('Maquinari', 'nodes_ambit_inc');
+    $maquinari_id = $maquinari_id['term_id'];
+
+    if (!term_exists('Programari i serveis', 'nodes_ambit_inc')) {
+        wp_insert_term(
+            'Programari i serveis',
+            'nodes_ambit_inc',
+            [
+                'description' => 'Incidència relacionada amb el programari, aplicacions i serveis corporatius',
+                'slug' => 'programari'
+            ]
+        );
+    }
+    $programari_id = term_exists('Programari', 'nodes_ambit_inc');
+    $programari_id = $programari_id['term_id'];
+
+    wp_insert_term(
+        'Impressora',
+        'nodes_ambit_inc',
+        [
+            'description' => 'Incidència relacionada amb una impressora',
+            'slug' => 'impressora',
+            'parent' => $maquinari_id
+        ]
+    );
+
+    wp_insert_term(
+        'Projector',
+        'nodes_ambit_inc',
+        [
+            'description' => 'Incidència relacionada amb un projector',
+            'slug' => 'projector',
+            'parent' => $maquinari_id
+        ]
+    );
+
+    wp_insert_term(
+        'Panell interactiu / PDI',
+        'nodes_ambit_inc',
+        [
+            'description' => 'Incidència relacionada amb un panell interactiu o una PDI',
+            'slug' => 'panell-pdi',
+            'parent' => $maquinari_id
+        ]
+    );
+
+    wp_insert_term(
+        'Portàtil',
+        'nodes_ambit_inc',
+        [
+            'description' => 'Incidència relacionada amb portàtils',
+            'slug' => 'portatil',
+            'parent' => $maquinari_id
+        ]
+    );
+
+    wp_insert_term(
+        'Ordinador de sobretaula',
+        'nodes_ambit_inc',
+        [
+            'description' => 'Incidència relacionada amb un ordinador de sobretaula',
+            'slug' => 'ordinador-sobretaula',
+            'parent' => $maquinari_id
+        ]
+    );
+
+    wp_insert_term(
+        'Pantalla',
+        'nodes_ambit_inc',
+        [
+            'description' => 'Incidència relacionada amb una pantalla',
+            'slug' => 'pantalla',
+            'parent' => $maquinari_id
+        ]
+    );
+
+    wp_insert_term(
+        'Connectivitat WIFI',
+        'nodes_ambit_inc',
+        [
+            'description' => 'Incidència relacionada amb la connectivitat interna',
+            'slug' => 'wifi',
+            'parent' => $maquinari_id
+        ]
+    );
+
+    wp_insert_term(
+        'Connectivitat a Internet',
+        'nodes_ambit_inc',
+        [
+            'description' => 'Incidència relacionada amb la connectivitat externa (sortida a Internet)',
+            'slug' => 'internet',
+            'parent' => $maquinari_id
+        ]
+    );
+
+    wp_insert_term(
+        'Google Classroom',
+        'nodes_ambit_inc',
+        [
+            'description' => 'Incidència relacionada el Google Classroom',
+            'slug' => 'classroom',
+            'parent' => $programari_id
+        ]
+    );
+
+    wp_insert_term(
+        'Google Workspace',
+        'nodes_ambit_inc',
+        [
+            'description' => 'Incidència relacionada el Google Workspace (abans GSuite) del centre',
+            'slug' => 'google-workspace',
+            'parent' => $programari_id
+        ]
+    );
+
+    wp_insert_term(
+        'Unitats de xarxa',
+        'nodes_ambit_inc',
+        [
+            'description' => 'Incidència relacionada amb unitats de xarxa',
+            'slug' => 'unitats-xarxa',
+            'parent' => $programari_id
+        ]
+    );
+
+    wp_insert_term(
+        'Moodle',
+        'nodes_ambit_inc',
+        [
+            'description' => 'Incidència relacionada amb el Moodle del centre',
+            'slug' => 'moodle',
+            'parent' => $programari_id
+        ]
+    );
+
+    wp_insert_term(
+        'Nodes',
+        'nodes_ambit_inc',
+        [
+            'description' => 'Incidència relacionada amb el web del centre',
+            'slug' => 'nodes',
+            'parent' => $programari_id
+        ]
+    );
+
+    wp_insert_term(
+        'Congelador',
+        'nodes_ambit_inc',
+        [
+            'description' => 'Incidència relacionada amb el programari per congelar els ordinadors (Deep Freeze, etc)',
+            'slug' => 'congelador',
+            'parent' => $programari_id
+        ]
+    );
+
+    wp_insert_term(
+        'Antivirus',
+        'nodes_ambit_inc',
+        [
+            'description' => 'Incidència relacionada amb els antivirus',
+            'slug' => 'antivirus',
+            'parent' => $programari_id
+        ]
+    );
+
+    wp_insert_term(
+        'Firewall',
+        'nodes_ambit_inc',
+        [
+            'description' => 'Incidències relacionades amb el filtratge de pàgines web',
+            'slug' => 'firewall',
+            'parent' => $programari_id
+        ]
+    );
+
+}

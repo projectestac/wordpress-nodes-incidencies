@@ -28,11 +28,22 @@ function incidencies_informatiques_template() {
     echo "<div class='identificadors'>";
     echo '<span class="lbl-sace"><label>SACE</label></span> <input width="300px" type="text" name="sace" value="' . $sace . '" />';
     echo '<span class="lbl-serialnumber"><label>Número de sèrie</label></span> <input width="300px" type="text" name="serialnumber" value="' . $serialnumber . '" />';
-    echo '<span class="lbl-remedy"><label>Remedy</label></span> <input width="300px" type="text" name="remedy" value="' . $remedy . '" />';
+
+    if (current_user_can('editor') || current_user_can('administrator')) {
+        echo '<span class="lbl-remedy"><label>Remedy</label></span> <input width="300px" type="text" name="remedy" value="' . $remedy . '" />';
+    } else {
+        echo '<span class="lbl-remedy"><label>Remedy</label></span> <input width="300px" type="text" name="remedy" value="' . $remedy . '" disabled/>';
+    }
+
     echo '</div>';
+
 }
 
 function save_incidencies_informatiques_meta($post_id, $post) {
+
+    if (!isset($_POST['incidencies_informatiques_noncename'])) {
+        return $post->ID;
+    }
 
     if (!wp_verify_nonce($_POST['incidencies_informatiques_noncename'], plugin_basename(__FILE__))) {
         return $post->ID;
@@ -49,7 +60,7 @@ function save_incidencies_informatiques_meta($post_id, $post) {
     foreach ($sace_meta as $key => $value) {
         // Check if it's a revision
         if ($post->post_type == 'revision') {
-            return ;
+            return;
         }
 
         if (get_post_meta($post->ID, $key, false)) {
