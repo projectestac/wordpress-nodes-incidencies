@@ -1,15 +1,15 @@
 <?php
 /**
  * @package Nodes_Incidencies_informatiques
- * @version 1.0.1
+ * @version 1.1.0
  */
 
 /**
  * Plugin Name: Nodes: Incidències informàtiques
  * Plugin URI: https://agora.xtec.cat/nodes/incidencies-informatiques
  * Description: Extensió per la gestió interna de les incidències informàtiques del centre educatiu.
- * Author: Xavier Meler
- * Version: 1.0.1
+ * Author: Xavier Meler, Òscar Benítez
+ * Version: 1.1.0
  * Author URI: https://dossier.xtec.cat/jmeler/
  */
 
