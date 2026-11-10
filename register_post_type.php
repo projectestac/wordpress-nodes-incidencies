@@ -1,5 +1,9 @@
 <?php
 
+if (!defined('ABSPATH')) {
+    exit;
+}
+
 // Create CPT nodes_incidencies, taxonomies and predefined terms
 
 function nodes_incidencies_register_post_type() {
@@ -25,7 +29,7 @@ function nodes_incidencies_register_post_type() {
         'labels' => $labels,
         'public' => true,
         'show_in_rest' => false,
-        'has_archive' => false,
+        'has_archive' => true,
         'publicly_queryable' => true,
         'exclude_from_search' => true,
         'query_var' => false,
@@ -42,13 +46,6 @@ function nodes_incidencies_register_post_type() {
 
     register_post_type('nodes_incidencies', $args);
 
-}
-
-// Add nodes_incidencies CPT to query
-function add_nodes_incidencies_to_query($query) {
-    if (is_home() && $query->is_main_query())
-        $query->set('post_type', ['post', 'nodes_incidencies']);
-    return $query;
 }
 
 // TAXONOMIES
@@ -74,7 +71,7 @@ function nodes_incidencies_register_taxonomy() {
         'args' => ['orderby' => 'term_order'],
         'rewrite' => ['slug' => 'estats_incidencia'],
         'show_admin_column' => true,
-        'show_in_rest' => true,
+        'show_in_rest' => false,
         'capabilities' => [
             'manage_terms' => 'manage_options', //by default only admin
             'edit_terms' => 'manage_options',
@@ -105,7 +102,7 @@ function nodes_incidencies_register_taxonomy() {
         'args' => ['orderby' => 'term_order'],
         'rewrite' => ['slug' => 'ambit_incidencia'],
         'show_admin_column' => true,
-        'show_in_rest' => true
+        'show_in_rest' => false
     ];
 
     register_taxonomy('nodes_ambit_inc', ['nodes_incidencies'], $args);
@@ -130,7 +127,7 @@ function nodes_incidencies_register_taxonomy() {
         'args' => ['orderby' => 'term_order'],
         'rewrite' => ['slug' => 'ubicacio_incidencia'],
         'show_admin_column' => true,
-        'show_in_rest' => true
+        'show_in_rest' => false
     ];
 
     register_taxonomy('nodes_ubicacio_inc', ['nodes_incidencies'], $args);
@@ -223,8 +220,8 @@ function nodes_incidencies_set_terms() {
         );
     }
 
-    $maquinari_id = term_exists('Maquinari', 'nodes_ambit_inc');
-    $maquinari_id = $maquinari_id['term_id'];
+    $maquinari = term_exists('maquinari', 'nodes_ambit_inc');
+    $maquinari_id = is_array($maquinari) ? (int) $maquinari['term_id'] : 0;
 
     if (!term_exists('Programari i serveis', 'nodes_ambit_inc')) {
         wp_insert_term(
@@ -236,167 +233,199 @@ function nodes_incidencies_set_terms() {
             ]
         );
     }
-    $programari_id = term_exists('Programari', 'nodes_ambit_inc');
-    $programari_id = $programari_id['term_id'];
+    $programari = term_exists('programari', 'nodes_ambit_inc');
+    $programari_id = is_array($programari) ? (int) $programari['term_id'] : 0;
 
-    wp_insert_term(
-        'Impressora',
-        'nodes_ambit_inc',
-        [
-            'description' => 'Incidència relacionada amb una impressora',
-            'slug' => 'impressora',
-            'parent' => $maquinari_id
-        ]
-    );
+    if (!term_exists('Impressora', 'nodes_ambit_inc')) {
+        wp_insert_term(
+            'Impressora',
+            'nodes_ambit_inc',
+            [
+                'description' => 'Incidència relacionada amb una impressora',
+                'slug' => 'impressora',
+                'parent' => $maquinari_id
+            ]
+        );
+    }
 
-    wp_insert_term(
-        'Projector',
-        'nodes_ambit_inc',
-        [
-            'description' => 'Incidència relacionada amb un projector',
-            'slug' => 'projector',
-            'parent' => $maquinari_id
-        ]
-    );
+    if (!term_exists('Projector', 'nodes_ambit_inc')) {
+        wp_insert_term(
+            'Projector',
+            'nodes_ambit_inc',
+            [
+                'description' => 'Incidència relacionada amb un projector',
+                'slug' => 'projector',
+                'parent' => $maquinari_id
+            ]
+        );
+    }
 
-    wp_insert_term(
-        'Panell interactiu / PDI',
-        'nodes_ambit_inc',
-        [
-            'description' => 'Incidència relacionada amb un panell interactiu o una PDI',
-            'slug' => 'panell-pdi',
-            'parent' => $maquinari_id
-        ]
-    );
+    if (!term_exists('Panell interactiu / PDI', 'nodes_ambit_inc')) {
+        wp_insert_term(
+            'Panell interactiu / PDI',
+            'nodes_ambit_inc',
+            [
+                'description' => 'Incidència relacionada amb un panell interactiu o una PDI',
+                'slug' => 'panell-pdi',
+                'parent' => $maquinari_id
+            ]
+        );
+    }
 
-    wp_insert_term(
-        'Portàtil',
-        'nodes_ambit_inc',
-        [
-            'description' => 'Incidència relacionada amb portàtils',
-            'slug' => 'portatil',
-            'parent' => $maquinari_id
-        ]
-    );
+    if (!term_exists('Portàtil', 'nodes_ambit_inc')) {
+        wp_insert_term(
+            'Portàtil',
+            'nodes_ambit_inc',
+            [
+                'description' => 'Incidència relacionada amb portàtils',
+                'slug' => 'portatil',
+                'parent' => $maquinari_id
+            ]
+        );
+    }
 
-    wp_insert_term(
-        'Ordinador de sobretaula',
-        'nodes_ambit_inc',
-        [
-            'description' => 'Incidència relacionada amb un ordinador de sobretaula',
-            'slug' => 'ordinador-sobretaula',
-            'parent' => $maquinari_id
-        ]
-    );
+    if (!term_exists('Ordinador de sobretaula', 'nodes_ambit_inc')) {
+        wp_insert_term(
+            'Ordinador de sobretaula',
+            'nodes_ambit_inc',
+            [
+                'description' => 'Incidència relacionada amb un ordinador de sobretaula',
+                'slug' => 'ordinador-sobretaula',
+                'parent' => $maquinari_id
+            ]
+        );
+    }
 
-    wp_insert_term(
-        'Pantalla',
-        'nodes_ambit_inc',
-        [
-            'description' => 'Incidència relacionada amb una pantalla',
-            'slug' => 'pantalla',
-            'parent' => $maquinari_id
-        ]
-    );
+    if (!term_exists('Pantalla', 'nodes_ambit_inc')) {
+        wp_insert_term(
+            'Pantalla',
+            'nodes_ambit_inc',
+            [
+                'description' => 'Incidència relacionada amb una pantalla',
+                'slug' => 'pantalla',
+                'parent' => $maquinari_id
+            ]
+        );
+    }
 
-    wp_insert_term(
-        'Connectivitat WIFI',
-        'nodes_ambit_inc',
-        [
-            'description' => 'Incidència relacionada amb la connectivitat interna',
-            'slug' => 'wifi',
-            'parent' => $maquinari_id
-        ]
-    );
+    if (!term_exists('Connectivitat WIFI', 'nodes_ambit_inc')) {
+        wp_insert_term(
+            'Connectivitat WIFI',
+            'nodes_ambit_inc',
+            [
+                'description' => 'Incidència relacionada amb la connectivitat interna',
+                'slug' => 'wifi',
+                'parent' => $maquinari_id
+            ]
+        );
+    }
 
-    wp_insert_term(
-        'Connectivitat a Internet',
-        'nodes_ambit_inc',
-        [
-            'description' => 'Incidència relacionada amb la connectivitat externa (sortida a Internet)',
-            'slug' => 'internet',
-            'parent' => $maquinari_id
-        ]
-    );
+    if (!term_exists('Connectivitat a Internet', 'nodes_ambit_inc')) {
+        wp_insert_term(
+            'Connectivitat a Internet',
+            'nodes_ambit_inc',
+            [
+                'description' => 'Incidència relacionada amb la connectivitat externa (sortida a Internet)',
+                'slug' => 'internet',
+                'parent' => $maquinari_id
+            ]
+        );
+    }
 
-    wp_insert_term(
-        'Google Classroom',
-        'nodes_ambit_inc',
-        [
-            'description' => 'Incidència relacionada el Google Classroom',
-            'slug' => 'classroom',
-            'parent' => $programari_id
-        ]
-    );
+    if (!term_exists('Google Classroom', 'nodes_ambit_inc')) {
+        wp_insert_term(
+            'Google Classroom',
+            'nodes_ambit_inc',
+            [
+                'description' => 'Incidència relacionada el Google Classroom',
+                'slug' => 'classroom',
+                'parent' => $programari_id
+            ]
+        );
+    }
 
-    wp_insert_term(
-        'Google Workspace',
-        'nodes_ambit_inc',
-        [
-            'description' => 'Incidència relacionada el Google Workspace (abans GSuite) del centre',
-            'slug' => 'google-workspace',
-            'parent' => $programari_id
-        ]
-    );
+    if (!term_exists('Google Workspace', 'nodes_ambit_inc')) {
+        wp_insert_term(
+            'Google Workspace',
+            'nodes_ambit_inc',
+            [
+                'description' => 'Incidència relacionada el Google Workspace (abans GSuite) del centre',
+                'slug' => 'google-workspace',
+                'parent' => $programari_id
+            ]
+        );
+    }
 
-    wp_insert_term(
-        'Unitats de xarxa',
-        'nodes_ambit_inc',
-        [
-            'description' => 'Incidència relacionada amb unitats de xarxa',
-            'slug' => 'unitats-xarxa',
-            'parent' => $programari_id
-        ]
-    );
+    if (!term_exists('Unitats de xarxa', 'nodes_ambit_inc')) {
+        wp_insert_term(
+            'Unitats de xarxa',
+            'nodes_ambit_inc',
+            [
+                'description' => 'Incidència relacionada amb unitats de xarxa',
+                'slug' => 'unitats-xarxa',
+                'parent' => $programari_id
+            ]
+        );
+    }
 
-    wp_insert_term(
-        'Moodle',
-        'nodes_ambit_inc',
-        [
-            'description' => 'Incidència relacionada amb el Moodle del centre',
-            'slug' => 'moodle',
-            'parent' => $programari_id
-        ]
-    );
+    if (!term_exists('Moodle', 'nodes_ambit_inc')) {
+        wp_insert_term(
+            'Moodle',
+            'nodes_ambit_inc',
+            [
+                'description' => 'Incidència relacionada amb el Moodle del centre',
+                'slug' => 'moodle',
+                'parent' => $programari_id
+            ]
+        );
+    }
 
-    wp_insert_term(
-        'Nodes',
-        'nodes_ambit_inc',
-        [
-            'description' => 'Incidència relacionada amb el web del centre',
-            'slug' => 'nodes',
-            'parent' => $programari_id
-        ]
-    );
+    if (!term_exists('Nodes', 'nodes_ambit_inc')) {
+        wp_insert_term(
+            'Nodes',
+            'nodes_ambit_inc',
+            [
+                'description' => 'Incidència relacionada amb el web del centre',
+                'slug' => 'nodes',
+                'parent' => $programari_id
+            ]
+        );
+    }
 
-    wp_insert_term(
-        'Congelador',
-        'nodes_ambit_inc',
-        [
-            'description' => 'Incidència relacionada amb el programari per congelar els ordinadors (Deep Freeze, etc)',
-            'slug' => 'congelador',
-            'parent' => $programari_id
-        ]
-    );
+    if (!term_exists('Congelador', 'nodes_ambit_inc')) {
+        wp_insert_term(
+            'Congelador',
+            'nodes_ambit_inc',
+            [
+                'description' => 'Incidència relacionada amb el programari per congelar els ordinadors (Deep Freeze, etc)',
+                'slug' => 'congelador',
+                'parent' => $programari_id
+            ]
+        );
+    }
 
-    wp_insert_term(
-        'Antivirus',
-        'nodes_ambit_inc',
-        [
-            'description' => 'Incidència relacionada amb els antivirus',
-            'slug' => 'antivirus',
-            'parent' => $programari_id
-        ]
-    );
+    if (!term_exists('Antivirus', 'nodes_ambit_inc')) {
+        wp_insert_term(
+            'Antivirus',
+            'nodes_ambit_inc',
+            [
+                'description' => 'Incidència relacionada amb els antivirus',
+                'slug' => 'antivirus',
+                'parent' => $programari_id
+            ]
+        );
+    }
 
-    wp_insert_term(
-        'Firewall',
-        'nodes_ambit_inc',
-        [
-            'description' => 'Incidències relacionades amb el filtratge de pàgines web',
-            'slug' => 'firewall',
-            'parent' => $programari_id
-        ]
-    );
+    if (!term_exists('Firewall', 'nodes_ambit_inc')) {
+        wp_insert_term(
+            'Firewall',
+            'nodes_ambit_inc',
+            [
+                'description' => 'Incidències relacionades amb el filtratge de pàgines web',
+                'slug' => 'firewall',
+                'parent' => $programari_id
+            ]
+        );
+    }
 
 }

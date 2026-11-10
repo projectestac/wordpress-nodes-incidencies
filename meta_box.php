@@ -1,5 +1,9 @@
 <?php
 
+if (!defined('ABSPATH')) {
+    exit;
+}
+
 // Metabox incidencies_informatiques
 function add_incidencies_informatiques_metaboxes() {
     add_meta_box(
@@ -26,20 +30,19 @@ function incidencies_informatiques_template() {
 
     // L'input que apareixerà quan creem una nova incidència
     echo "<div class='identificadors'>";
-    echo '<span class="lbl-sace"><label>SACE</label></span> <input width="300px" type="text" name="sace" value="' . $sace . '" />';
-    echo '<span class="lbl-serialnumber"><label>Número de sèrie</label></span> <input width="300px" type="text" name="serialnumber" value="' . $serialnumber . '" />';
+    echo '<span class="lbl-sace"><label>SACE</label></span> <input width="300px" type="text" name="sace" value="' . esc_attr($sace) . '" />';
+    echo '<span class="lbl-serialnumber"><label>Número de sèrie</label></span> <input width="300px" type="text" name="serialnumber" value="' . esc_attr($serialnumber) . '" />';
 
-    if (current_user_can('editor') || current_user_can('administrator')) {
-        echo '<span class="lbl-remedy"><label>Remedy</label></span> <input width="300px" type="text" name="remedy" value="' . $remedy . '" />';
-    } else {
-        echo '<span class="lbl-remedy"><label>Remedy</label></span> <input width="300px" type="text" name="remedy" value="' . $remedy . '" disabled/>';
-    }
+     // El camp Remedy ara és editable per a qualsevol usuari que pugui editar la incidència
+    // (abans estava reservat als rols editor/administrator).
+    echo '<span class="lbl-remedy"><label>Remedy</label></span> <input width="300px" type="text" name="remedy" value="' . esc_attr($remedy) . '" />';
 
     echo '</div>';
 
 }
 
 function save_incidencies_informatiques_meta($post_id, $post) {
+
 
     if (!isset($_POST['incidencies_informatiques_noncename'])) {
         return $post->ID;
@@ -53,9 +56,19 @@ function save_incidencies_informatiques_meta($post_id, $post) {
         return $post->ID;
     }
 
-    $sace_meta['sace'] = $_POST['sace'];
-    $sace_meta['serialnumber'] = $_POST['serialnumber'];
-    $sace_meta['remedy'] = $_POST['remedy'];
+    if ($post->post_type != 'nodes_incidencies') {
+        return $post->ID;
+    }
+
+    // Sanejar sempre l'entrada de l'usuari abans de desar-la
+        $sace_meta['sace'] = sanitize_text_field($_POST['sace'] ?? '');
+    $sace_meta['serialnumber'] = sanitize_text_field($_POST['serialnumber'] ?? '');
+
+   // Ara qualsevol usuari amb permís d'edició sobre la incidència pot desar el Remedy.
+    // El permís general ja s'ha comprovat abans amb current_user_can('edit_post').
+    if (isset($_POST['remedy'])) {
+        $sace_meta['remedy'] = sanitize_text_field($_POST['remedy']);
+    }
 
     foreach ($sace_meta as $key => $value) {
         // Check if it's a revision
@@ -72,7 +85,7 @@ function save_incidencies_informatiques_meta($post_id, $post) {
         }
 
         // If void, delete it
-        if (!$value) {
+        if ($value === '') {
             delete_post_meta($post->ID, $key);
         }
     }

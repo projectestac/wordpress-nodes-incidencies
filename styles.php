@@ -1,5 +1,9 @@
 <?php
 
+if (!defined('ABSPATH')) {
+    exit;
+}
+
 add_action('admin_head', 'nodes_incidencies_css');
 
 function nodes_incidencies_css() {
