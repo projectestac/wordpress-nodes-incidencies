@@ -198,7 +198,7 @@ function nodes_incidencies_admin_posts_filter_restrict_manage_posts() {
     }
 
     //only add filter to post type you want
-    if ('nodes_incidencies' == $type) {
+    if ('nodes_incidencies' === $type) {
         // Change this to the list of values you want to show
         // in 'label' => 'value' format
 
@@ -223,7 +223,7 @@ function nodes_incidencies_admin_posts_filter_restrict_manage_posts() {
                 (
                     '<option value="%s"%s>%s</option>',
                     esc_attr($value),
-                    $value == $current_v ? ' selected="selected"' : '',
+                    $value === $current_v ? ' selected="selected"' : '',
                     esc_html($label)
                 );
             }
@@ -251,7 +251,7 @@ function nodes_incidencies_admin_posts_filter_restrict_manage_posts() {
                 (
                     '<option value="%s"%s>%s</option>',
                     esc_attr($value),
-                    $value == $current_v ? ' selected="selected"' : '',
+                    $value === $current_v ? ' selected="selected"' : '',
                     esc_html($label)
                 );
             }
@@ -279,7 +279,7 @@ function nodes_incidencies_admin_posts_filter_restrict_manage_posts() {
                 (
                     '<option value="%s"%s>%s</option>',
                     esc_attr($value),
-                    $value == $current_v ? ' selected="selected"' : '',
+                    $value === $current_v ? ' selected="selected"' : '',
                     esc_html($label)
                 );
             }

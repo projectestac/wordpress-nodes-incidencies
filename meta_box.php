@@ -55,7 +55,7 @@ function save_incidencies_informatiques_meta($post_id, $post) {
         return $post->ID;
     }
 
-    if ($post->post_type != 'nodes_incidencies') {
+    if ($post->post_type !== 'nodes_incidencies') {
         return $post->ID;
     }
 
@@ -71,7 +71,7 @@ function save_incidencies_informatiques_meta($post_id, $post) {
 
     foreach ($sace_meta as $key => $value) {
         // Check if it's a revision
-        if ($post->post_type == 'revision') {
+        if ($post->post_type === 'revision') {
             return;
         }
 

@@ -41,7 +41,7 @@ function nodes_incidencies_activate() {
 }
 
 function nodes_incidencies_end_activation() {
-    if (get_option('Activated_incidencies') == 'nodes_incidencies') {
+    if (get_option('Activated_incidencies') === 'nodes_incidencies') {
         delete_option('Activated_incidencies');
     }
 }
@@ -72,7 +72,7 @@ function wpse118970_change_visibility_metabox() {
     if (!$post instanceof WP_Post) {
         return;
     }
-    if ($post->post_type != 'nodes_incidencies' || current_user_can('edit_others_posts'))
+    if ($post->post_type !== 'nodes_incidencies' || current_user_can('edit_others_posts'))
         return;
     $post->post_password = '';
     $visibility = 'private';

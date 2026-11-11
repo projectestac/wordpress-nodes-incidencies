@@ -137,7 +137,7 @@ function nodes_incidencies_register_taxonomy() {
 // Set of predefined TERMS
 function nodes_incidencies_set_terms() {
 
-    if (get_option('Activated_incidencies') != 'nodes_incidencies') {
+    if (get_option('Activated_incidencies') !== 'nodes_incidencies') {
         return;
     }
 
