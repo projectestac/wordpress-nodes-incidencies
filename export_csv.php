@@ -102,7 +102,8 @@ function func_export_all_incidencies() {
 
             $data_inc = get_the_date('d/m/Y H:i');
 
-            $titol = get_the_title();
+            // Títol tal com està desat: get_the_title() aplica wptexturize i retorna entitats HTML (&#8217;)
+            $titol = $post->post_title;
             $descripcio = trim(strip_tags(get_the_content()));
 
             $sace = get_post_meta(get_the_ID(), 'sace', true);
