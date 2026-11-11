@@ -32,6 +32,11 @@ add_action('init', 'nodes_incidencies_end_activation');
 
 function nodes_incidencies_activate() {
     add_option('Activated_incidencies', 'nodes_incidencies');
+
+    // En activar l'extensió, 'init' ja s'ha executat i el CPT i les taxonomies no estan registrats.
+    // Cal registrar-los abans del flush perquè les regles de reescriptura els incloguin.
+    nodes_incidencies_register_post_type();
+    nodes_incidencies_register_taxonomy();
     flush_rewrite_rules();
 }
 
