@@ -64,7 +64,7 @@ function nodes_incidencies_forca_privada($data, $postarr) {
 add_action('post_submitbox_misc_actions', 'wpse118970_change_visibility_metabox');
 function wpse118970_change_visibility_metabox() {
     global $post;
-      if (!$post instanceof WP_Post) {
+    if (!$post instanceof WP_Post) {
         return;
     }
     if ($post->post_type != 'nodes_incidencies' || current_user_can('edit_others_posts'))
@@ -165,5 +165,3 @@ function nodes_incidencies_tax_archives_query($query) {
         $query->set('post_type', 'nodes_incidencies');
     }
 }
-
-;

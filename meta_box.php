@@ -33,7 +33,7 @@ function incidencies_informatiques_template() {
     echo '<span class="lbl-sace"><label>SACE</label></span> <input width="300px" type="text" name="sace" value="' . esc_attr($sace) . '" />';
     echo '<span class="lbl-serialnumber"><label>Número de sèrie</label></span> <input width="300px" type="text" name="serialnumber" value="' . esc_attr($serialnumber) . '" />';
 
-     // El camp Remedy ara és editable per a qualsevol usuari que pugui editar la incidència
+    // El camp Remedy ara és editable per a qualsevol usuari que pugui editar la incidència
     // (abans estava reservat als rols editor/administrator).
     echo '<span class="lbl-remedy"><label>Remedy</label></span> <input width="300px" type="text" name="remedy" value="' . esc_attr($remedy) . '" />';
 
@@ -42,7 +42,6 @@ function incidencies_informatiques_template() {
 }
 
 function save_incidencies_informatiques_meta($post_id, $post) {
-
 
     if (!isset($_POST['incidencies_informatiques_noncename'])) {
         return $post->ID;
@@ -61,10 +60,10 @@ function save_incidencies_informatiques_meta($post_id, $post) {
     }
 
     // Sanejar sempre l'entrada de l'usuari abans de desar-la
-        $sace_meta['sace'] = sanitize_text_field($_POST['sace'] ?? '');
+    $sace_meta['sace'] = sanitize_text_field($_POST['sace'] ?? '');
     $sace_meta['serialnumber'] = sanitize_text_field($_POST['serialnumber'] ?? '');
 
-   // Ara qualsevol usuari amb permís d'edició sobre la incidència pot desar el Remedy.
+    // Ara qualsevol usuari amb permís d'edició sobre la incidència pot desar el Remedy.
     // El permís general ja s'ha comprovat abans amb current_user_can('edit_post').
     if (isset($_POST['remedy'])) {
         $sace_meta['remedy'] = sanitize_text_field($_POST['remedy']);

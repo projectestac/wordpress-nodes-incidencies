@@ -46,7 +46,7 @@ function nodes_incidencies_column($column, $post_id) {
         echo (int) $post_id;
     }
 
-        if ('imatge' === $column) {
+    if ('imatge' === $column) {
         if (has_post_thumbnail($post_id)) {
             echo get_the_post_thumbnail($post_id, [40, 40], ['style' => 'width:40px;height:40px;object-fit:cover;border-radius:3px;']);
         } else {
@@ -142,9 +142,9 @@ function nodes_incidencies_search_join($join, $query) {
     global $wpdb;
 
     if (nodes_incidencies_es_cerca_admin() && $query->is_main_query()) {
-                $join .= " LEFT JOIN {$wpdb->postmeta}
-                   ON {$wpdb->posts}.ID = {$wpdb->postmeta}.post_id
-                   AND {$wpdb->postmeta}.meta_key IN ('sace', 'serialnumber', 'remedy') ";
+        $join .= " LEFT JOIN {$wpdb->postmeta}
+                  ON {$wpdb->posts}.ID = {$wpdb->postmeta}.post_id
+                  AND {$wpdb->postmeta}.meta_key IN ('sace', 'serialnumber', 'remedy') ";
     }
 
     return $join;

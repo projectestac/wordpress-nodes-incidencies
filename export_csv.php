@@ -22,10 +22,11 @@ function admin_incidencies_list_add_export_button($which) {
 
 add_action('manage_posts_extra_tablenav', 'admin_incidencies_list_add_export_button', 20, 1);
 
-// Neutralitza valors que s'interpretarien com a fórmula
-// si el primer caràcter és =, +, -, @, tabulador o retorn de carro (injecció CSV).
-function nodes_incidencies_csv_safe($v){
-    if (is_string($v) && $v !== '' && in_array($v[0], ['=', '+', '-', '@', "\t", "\r"], true)) {
+// Neutralitza valors que s'interpretarien com a fórmula (injecció CSV): els que comencen per
+// tabulador o retorn de carro, i els que tenen =, +, - o @ com a primer caràcter visible, encara
+// que hi hagi espais (també no separables) al davant, perquè alguns fulls de càlcul els ignoren.
+function nodes_incidencies_csv_safe($v) {
+    if (is_string($v) && preg_match('/^(?:[\t\r]|(?:\s|\xC2\xA0)*[=+\-@])/', $v)) {
         return "'" . $v;
     }
     return $v;
@@ -33,12 +34,12 @@ function nodes_incidencies_csv_safe($v){
 
 function func_export_all_incidencies() {
 
-
     if (!isset($_GET['export_all_incidencies'])) {
         return;
     }
 
-       if (!is_user_logged_in()) {
+    // Cal poder crear entrades: és el permís que dona accés al llistat d'incidències
+    if (!is_user_logged_in() || !current_user_can('edit_posts')) {
         wp_die(
             __('No tens permisos per exportar.'),
             __('Accés denegat'),
@@ -61,7 +62,7 @@ function func_export_all_incidencies() {
         'posts_per_page' => -1,
     ];
 
-        // Els professors (sense edit_others_posts) només exporten les incidències que han creat ells
+    // Els professors (sense edit_others_posts) només exporten les incidències que han creat ells
     if (!current_user_can('edit_others_posts')) {
         $arg['author'] = get_current_user_id();
     }
@@ -119,7 +120,7 @@ function func_export_all_incidencies() {
                 $ubi = [];
             }
 
-             // Estats
+            // Estats
             $sta = wp_get_post_terms(get_the_ID(), 'nodes_estat_inc', ['fields' => 'names']);
             if (!is_array($sta)) {
                 $sta = [];
